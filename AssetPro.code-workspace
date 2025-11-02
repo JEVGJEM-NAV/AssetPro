@@ -1,0 +1,46 @@
+{
+	"folders": [
+		{
+			"path": ".alpackages"
+		},
+		{
+			"path": "AL"
+		},
+		{
+			"path": "Test"
+		},
+		{
+			"path": "TestResults"
+		},
+		{
+			"path": ".AL-Go"
+		},
+		{
+			"path": ".github"
+		},
+		{
+			"path": ".claude"
+		}
+	],
+	"settings": {
+		"al.packageCachePath": "../.alpackages",
+		"al.codeAnalyzers": [
+			"${CodeCop}",
+			"${UICop}"
+		],
+		"al.enableCodeAnalysis": true,
+		"al.ruleSetPath": "./.codeAnalysis/jml.ruleset.json",
+		"CRS.FileNamePattern": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+		"CRS.FileNamePatternExtensions": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+		"CRS.FileNamePatternPageCustomizations": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+		"CRS.OnSaveAlFileAction": "Rename",
+		"CRS.RenameWithGit": false,
+		"CRS.ObjectNamePrefix": "JML ",
+		"al.assemblyProbingPaths": [
+			"./.netpackages",
+			"C:/Program Files/Assemblies",
+			"c:/Windows/assembly/"
+		],
+		"powershell.cwd": "AL"
+	}
+}

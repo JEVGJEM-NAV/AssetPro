@@ -1,0 +1,34 @@
+{
+  "id": "0e7df5a2-2732-4caf-a0e7-681a20c96f59",
+  "name": "Asset Pro",
+  "publisher": "JEMEL",
+  "version": "26.0.0.0",
+  "brief": "Easy connect your Microsoft Dynamics 365 Business Central with Shopify web store",
+  "description": "ShopifyConnect is a tool that allows you to import orders from and to send items/customers to Shopify",
+  "privacyStatement": "http://jemel.lv/BCApp/privacy_policy.pdf",
+  "EULA": "http://jemel.lv/BCApp/AppStandardContract.pdf",
+  "help": "https://jemel.lv/docs/asset-pro/",
+  "url": "http://www.jemel.lv",
+  "logo": "./jemel_logo_largel.png",
+  "platform": "26.0.0.0", 
+  "application": "26.0.0.0",  
+  "screenshots": [], 
+  "internalsVisibleTo": [
+    {
+      "id": "a62ab4b7-6914-455e-b854-cb71450306c1", 
+      "name": "Asset Pro Test", 
+      "publisher": "JEMEL"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 70182300,
+      "to": 70182449
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://AL.com/help/",
+  "resourceExposurePolicy": {"allowDownloadingSource": false, "includeSourceInSymbolFile":false, "allowDebugging": false},
+  "runtime":"15.2",
+  "features": [ "TranslationFile" ],
+  "applicationInsightsConnectionString": "InstrumentationKey=6b5b6139-7557-46d9-b4b6-8a9cca99d36b;IngestionEndpoint=https://germanywestcentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://germanywestcentral.livediagnostics.monitor.azure.com/"
+}

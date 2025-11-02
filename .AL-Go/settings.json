@@ -1,0 +1,12 @@
+{
+    "country":  "w1",
+    "AppSourceCopMandatoryAffixes":  [
+        "JML"
+    ],
+    "appFolders":  [
+    ],
+    "testFolders":  [
+    ],
+    "bcptTestFolders":  [
+    ]
+}

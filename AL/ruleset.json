@@ -1,0 +1,46 @@
+{
+    "name": "My Custom ruleset",
+    "generalAction": "Hidden",
+    "rules": [
+        {                    
+            "id": "AA0005",                    
+            "action": "Hidden",
+            "justification": "Only use BEGIN..END to enclose compound statements. -> ignore"
+        },
+        {                    
+            "id": "AA0137",                    
+            "action": "Hidden",
+            "justification": "Only use BEGIN..END to enclose compound statements. -> ignore"
+        },
+        {                    
+            "id": "AA0021",                    
+            "action": "Hidden",
+            "justification": "Variable declarations should be ordered by type. -> ignore"
+        },
+        {                    
+            "id": "AA0074",                    
+            "action": "Hidden",
+            "justification": "Variable 'Text001' must have a suffix from this list: Msg, Tok, Err, Qst, Lbl, Txt. -> ignore"
+        },
+        {                    
+            "id": "AA0008",                    
+            "action": "Hidden",
+            "justification": "You must specify open and close parenthesis after -> ignore"
+        },
+        {                    
+            "id": "AA0214",                    
+            "action": "Hidden",
+            "justification": "The record X should be modified before saving to the database. -> ignore"
+        },
+        {                    
+            "id": "AA0470",                    
+            "action": "Hidden",
+            "justification": "Variable with placeholders should have a comment explaining their content. -> ignore"
+        },
+        {                    
+            "id": "AA0218",                    
+            "action": "Hidden",
+            "justification": "The Tooltip property must be filled. -> ignore"
+        }
+    ]
+}

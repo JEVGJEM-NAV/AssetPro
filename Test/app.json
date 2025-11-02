@@ -1,0 +1,41 @@
+{
+  "id": "a62ab4b7-6914-455e-b854-cb71450306c1",
+  "name": "Asset Pro Test",
+  "publisher": "JEMEL",
+  "version": "26.0.0.0",
+  "brief": "Test for Asset Pro",
+  "description": "Test for Asset Pro",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "http://www.jemel.lv",
+  "logo": "",
+  "platform": "26.0.0.0", 
+  "application": "26.0.0.0",  
+  "screenshots": [], 
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 50199
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://AL.com/help/",
+  "resourceExposurePolicy": {"allowDownloadingSource": true, "includeSourceInSymbolFile":true, "allowDebugging": true},
+  "runtime":"15.2",
+  "features": [],
+  "dependencies": [
+    {
+      "id": "0e7df5a2-2732-4caf-a0e7-681a20c96f59",
+      "name": "Asset Pro",
+      "publisher": "JEMEL",
+      "version": "26.0.0.0"
+    },    
+    {
+      "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "name": "Library Assert",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    } 
+  ],
+  "applicationInsightsConnectionString": ""
+}

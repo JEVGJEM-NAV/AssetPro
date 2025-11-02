@@ -1,0 +1,16 @@
+*.app
+*.g.xlf
+*.zip
+*.flf
+TestResults.xml
+BuildOutput.txt
+rad.json
+launch.json
+cache_*
+.output
+.alcache/
+.altemplates/
+extraction-manifest.json
+.claude/
+*.ps1
+AL/build.ps1
