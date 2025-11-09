@@ -1,0 +1,38 @@
+{
+  "hooks": [
+    {
+      "name": "Skill Auto-Activation",
+      "event": "userPromptSubmit",
+      "enabled": true,
+      "script": "src/userPromptSubmit.js",
+      "description": "Auto-activates relevant AL skills based on prompt analysis (always loads al-development-core)"
+    },
+    {
+      "name": "Context Monitor",
+      "event": "userPromptSubmit",
+      "enabled": true,
+      "script": "src/contextMonitor.js",
+      "description": "Monitors context usage and injects warnings when running low (< 25%)"
+    },
+    {
+      "name": "AL Code Quality Check",
+      "event": "stop",
+      "enabled": true,
+      "script": "src/stopEvent.js",
+      "description": "Checks AL files for quality issues (WITH statements, missing properties, etc.)"
+    },
+    {
+      "name": "DevDocs Auto-Update",
+      "event": "stop",
+      "enabled": true,
+      "script": "src/devDocsAutoUpdate.js",
+      "description": "Automatically updates tasks.md and context.md with completed work and object IDs"
+    }
+  ],
+  "settings": {
+    "contextWarningThreshold": 25,
+    "contextCriticalThreshold": 15,
+    "autoUpdateDevDocs": true,
+    "enableQualityChecks": true
+  }
+}

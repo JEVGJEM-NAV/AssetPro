@@ -1,0 +1,56 @@
+{
+  "hooks": {
+    "userPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/src/userPromptSubmit.js"
+          }
+        ]
+      }
+    ],
+    "stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/src/stopEvent.js"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "Bash(cd:*)",
+      "Read(**/*.al)",
+      "Read(**/*.json)",
+      "Read(**/*.md)",
+      "Read(**/*.xml)",
+      "Read(**/*.ps1)",
+      "Write(**/*.al)",
+      "Write(**/*.md)",
+      "Write(**/*.json)",
+      "Edit(**/*.al)",
+      "Edit(**/*.md)",
+      "Edit(**/*.json)",
+      "Glob(**/*.al)",
+      "Glob(**/*.md)",
+      "Glob(**/*.json)",
+      "Grep(*)"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(*)",
+      "Write(*)",
+      "Edit(*)"
+    ]
+  }
+}

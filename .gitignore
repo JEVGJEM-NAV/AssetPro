@@ -11,6 +11,7 @@ cache_*
 .alcache/
 .altemplates/
 extraction-manifest.json
-.claude/
+.claude/Symbols
 *.ps1
 AL/build.ps1
+TestResults

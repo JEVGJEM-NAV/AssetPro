@@ -1,0 +1,204 @@
+<!--
+    BC AL Development Analysis Template
+
+    Purpose: Analysis, planning, and architecture tasks WITHOUT implementation
+
+    Workflow Mode: ANALYSIS (Relaxed)
+    - No Phase 3 approval stop point
+    - Free-form discussion and exploration
+    - Ask questions, propose solutions, iterate on design
+    - Still follows standards (ID management, file structure, naming)
+
+    Use this template for:
+    ✓ Requirements gathering and analysis
+    ✓ Architecture planning and design
+    ✓ Research and feasibility studies
+    ✓ Creating implementation plans
+    ✓ Exploring multiple solution approaches
+    ✓ Analyzing existing code or systems
+
+    For actual implementation (writing code), use task_template_bc_al_development.xml instead.
+
+    Usage:
+    1. Copy this template for each analysis/planning task
+    2. Fill in project_info, external_references, and task sections
+    3. Paste into Claude Code when starting work
+    4. Hook system will auto-activate skills in analysis mode
+-->
+
+// usage claude --permission-mode bypassPermissions "$(Get-Content .\.claude\ai_implementation_plan_analysis2.xml -Raw)"
+
+
+<task type="bc_al_development_analysis" workflow_mode="analysis">
+
+    <!-- ========================================
+         PROJECT INFORMATION
+         Configure project-specific paths and settings
+         ======================================== -->
+    <project_info>
+		<name>Asset Pro</name>
+		<full_name>Asset Pro - Multi-Industry Asset Management</full_name>
+		<repository_root>C:\GIT\JEMEL\JML_AssetPro</repository_root>
+		<al_project_folder>C:\GIT\JEMEL\JML_AssetPro\AL</al_project_folder>
+		<test_project_folder>C:\GIT\JEMEL\JML_AssetPro\Test</test_project_folder>
+		<claude_folder>C:\GIT\JEMEL\JML_AssetPro\.claude</claude_folder>
+		<description>Multi-industry asset management platform for Microsoft Business Central that adapts to any industry</description>
+		<tagline>Track any asset, any industry, your way</tagline>
+	</project_info>
+
+
+    <!-- ========================================
+         EXTERNAL REFERENCES
+         Link to resources Claude should reference
+         ======================================== -->
+   <external_references>
+
+        <source_reference>
+            <example_project_path>C:\GIT\JEMEL\Rollsberg\BC-Apps\Rollsberg\src</example_project_path>
+            <note>Rollsberg's marine-specific Fleet Management</note>		
+	    </source_reference>
+
+        <!-- Previous Research/Analysis Documents -->
+        <research>
+            <document>
+                <title>Analysis how to transform Rollsberg's marine-specific Fleet Management into universal Asset Management</title>
+                <location>.\.claude\Objects_System_Research_Report.md</location>
+            </document>    
+            <document>
+                <title>Previous planning result, will can take some ideas</title>
+                <location>.\.claude\Analysis_and_Planning_Asset_Pro.md</location>
+            </document>         
+        </research>
+    </external_references>
+
+
+    <!-- ========================================
+         TASK CONTEXT
+         Background information for this work
+         ======================================== -->
+    <context>
+        <overall_project>
+            <goal>
+                Build complete universal Asset Management solution.
+            </goal>
+            <current_status>
+                Phase 1 start analysis and planning over again.
+            </current_status>
+        </overall_project>
+
+        <existing_work>
+            Ignore existing objects made in previous run, we are starting fresh.            
+        </existing_work>
+    </context>
+
+
+    <!-- ========================================
+         ANALYSIS TASK
+         What needs to be analyzed/planned
+         ======================================== -->
+     <current_task>
+
+        <title>Analysis and planning for Asset Pro management application</title>
+
+        <description>
+            We need to create plan for Asset Pro management application.
+            We take best parts from Rollsberg and generalize them.
+            Create list of objects needed with description and requirements.
+            In this task we focus on requirements gathering and analysis only.
+            Ask questions if something is unclear. Propose solutions, and additional requirements if needed.
+        </description>
+
+        <requirements>
+            <!-- Functional Requirements -->
+            <functional>
+                <requirement priority="must">
+                    Solution need to be able to replace Rollsberg's existing functionality for marine fleet management.
+                </requirement> 
+                <requirement priority="must">
+                    Solution need to be able to handle another case: 
+                    Company "Venden SIA" from Latvia. They sell drinking water dispensers and rent them to customers.
+                    Each dispenser is an asset. They have different models (types) of dispensers.
+                    Each dispenser can have components (filters, taps, etc.) that also need to be tracked as assets.
+                    dispensers are delivered to customer locations (offices, shops) and can be moved between locations.
+                    Dispensers can be sold to customers or rented out. Need to track ownership and rental history.
+                    Maintenance activities (filter changes, repairs) need to be logged against each dispenser asset.
+                </requirement> 
+                <requirement priority="must">
+                    Unlimited levels of asset hierarchy. We start from defining structure per industry (root) then setting up child levels. Compare with how Item Categories organized in BC. 
+                    Then Asset is linked to a) root level to set industry and b) any level in the hierarchy under that industry.
+                    Every level has name and code, so it makes configurable terminology. Meaning for Vehicles industry we have levels: Fleet (root) -> Vehicle Type -> Vehicle Model -> Vehicle Unit.
+                    This terminology can be different for other industries. And when user opens list of X level, they see proper name for that level in pages (Vehicle Types, Vehicle Models, etc.).
+                    May be use of CaptionClass for dynamic renaming of levels in UI? Like Dimensions do?
+                </requirement>
+                <requirement priority="should">
+                    Asset attributes defined per industry and per level in hierarchy. E.g. for Vehicles we have different attributes than for Machinery.
+                    Attributes can be of different types: text, number, date, option, boolean, lookup
+                </requirement>
+                <requirement priority="must">
+                    Single Asset table with self-referential parent/child relationships.
+                    Any Asset can be parent of other Assets. Example: Vehicle (Asset) → Engine (Asset) → Turbocharger (Asset).
+                    Each asset can have its own attributes and component list. Component table separate for non-asset parts/assemblies.
+                    When we assign asset as child to another asset, we need to check if hierarchy levels are compatible, not allow to overlap levels.
+                    Circular reference prevention.
+                </requirement>
+                <requirement priority="must">
+                    Current owner/holder of asset can be: Customer, Vendor, Location (item location in BC), Cost Center.
+                    Asset can be transitioned between locations, customers, cost centers, vendors. Track history (from-to).                    
+                </requirement>
+                <requirement priority="must">
+                    Transition between locations, customers, cost centers, vendors must be made by standard BC documents (Transfer Order, Sales Order, Purchase Order). This is phase 2.                    
+                </requirement>
+            </functional>
+        </requirements>
+    </current_task>
+
+    <workflow>
+        <phase id="1" name="Analysis">
+            <description>
+                Gather requirements, analyze existing solutions, read previous plan, ask questions if something is unclear.
+            </description>
+            <approval_stop_point>false</approval_stop_point>
+        </phase>
+        <phase id="2" name="Architecture Planning">
+            <description>
+                For every part of proposed solution propose architecture, objects needed, data flows, interactions in text.
+                Wait for approval before proceeding write it into document. Change if needed based on feedback, until user approve it as decided.
+            </description>
+            <approval_stop_point>true</approval_stop_point>
+        </phase>
+        <phase id="3" name="Implementation in document">
+            <description>
+                For every part of proposed solution implement it in the document.
+            </description>
+            <approval_stop_point>true</approval_stop_point>
+        </phase>    
+    </workflow>
+
+
+
+    <!-- ========================================
+         NOTES & SPECIAL INSTRUCTIONS
+         Anything else Claude should know
+         ======================================== -->
+    <notes>     
+        <note type="reminder">
+            Always verify BC objects structure from Symbols/ before proposing changes.
+            Do NOT assume field numbers or names.
+        </note>        
+    </notes>
+
+     <output_preferences>
+        <format>
+            Create a comprehensive markdown document in .claude/ folder.
+            File name should be Analysis_and_Planning_Asset_Pro_v2.md
+            Include sections for:
+            - Executive Summary
+            - Requirements Analysis
+            - Proposed Architecture
+            - Object Inventory (tables, pages, codeunits with IDs)
+            - Implementation Phases
+            - Risks and Mitigation
+            - Next Steps
+            - mermaid shemas for complex processes and data flows
+    </output_preferences>
+</task>

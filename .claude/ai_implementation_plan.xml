@@ -1,0 +1,133 @@
+<!--
+    BC AL Development Task Template (New Approach - Skills + Hooks)
+
+    Purpose: Define project-specific context and task requirements
+
+    What this template does:
+    ✓ Provides project paths and configuration
+    ✓ References external resources (API docs, research)
+    ✓ Defines task requirements and acceptance criteria
+    ✓ Provides context for Claude to understand the work
+
+    What this template does NOT do:
+    ✗ Activate skills (handled by hooks/src/userPromptSubmit.js)
+    ✗ Define workflow phases (defined in skills/al-development-core/SKILL.md)
+    ✗ Define quality gates (defined in SKILL.md)
+
+    Usage:
+    1. Copy this template for each major feature/task
+    2. Fill in project_info, external_references, and task sections
+    3. Paste into Claude Code when starting work
+    4. Hook system will auto-activate appropriate skills
+-->
+
+// usage claude --permission-mode bypassPermissions "$(Get-Content .\.claude\ai_implementation_plan.xml -Raw)"
+
+<task type="bc_al_development_analysis">
+   <project_info>
+		<name>Asset Pro</name>
+		<full_name>Asset Pro - Multi-Industry Asset Management</full_name>
+		<repository_root>C:\GIT\JEMEL\JML_AssetPro</repository_root>
+		<al_project_folder>C:\GIT\JEMEL\JML_AssetPro\AL</al_project_folder>
+		<test_project_folder>C:\GIT\JEMEL\JML_AssetPro\Test</test_project_folder>
+		<claude_folder>C:\GIT\JEMEL\JML_AssetPro\.claude</claude_folder>
+		<description>Multi-industry asset management platform for Microsoft Business Central that adapts to any industry</description>
+		<tagline>Track any asset, any industry, your way</tagline>
+	</project_info>
+
+    <!-- ========================================
+         EXTERNAL REFERENCES
+         Link to resources Claude should reference
+         ======================================== -->
+    <external_references>
+
+        <source_reference>
+            <example_project_path>C:\GIT\JEMEL\Rollsberg\BC-Apps\Rollsberg\src</example_project_path>
+            <note>Rollsberg's marine-specific Fleet Management</note>		
+	    </source_reference>
+
+        <!-- Previous Research/Analysis Documents -->
+        <research>
+            <document>
+                <title>Analysis how to transform Rollsberg's marine-specific Fleet Management into universal Asset Management</title>
+                <location>.\.claude\Objects_System_Research_Report.md</location>
+            </document>            
+        </research>
+    </external_references>
+
+
+    <!-- ========================================
+         TASK CONTEXT
+         Background information for this work
+         ======================================== -->
+    <context>
+        <overall_project>
+            <goal>
+                Build complete universal Asset Management solution.
+            </goal>
+            <current_status>
+                Phase 1 start analysis and planning over again.
+            </current_status>
+        </overall_project>
+
+        <existing_work>
+            Ignore existing objects made in previous run, we are starting fresh.            
+        </existing_work>
+    </context>
+
+
+    <!-- ========================================
+         CURRENT TASK
+         What needs to be done RIGHT NOW
+         ======================================== -->
+    <current_task>
+
+        <title>Analysis and planning for Asset Pro management application</title>
+
+        <description>
+            We need to create plan for Asset Pro management application.
+            We take best parts from Rollsberg and generalize them.
+            Create list of objects needed with description and requirements.
+            In this task we focus on requirements gathering and analysis only.
+            Ask questions if something is unclear. Propose solutions, and additional requirements if needed.
+        </description>
+
+        <requirements>
+
+            <!-- Functional Requirements -->
+            <functional>
+                <requirement priority="must">
+                    Complete 3 level asset hierarchy. We store assets in levels, levels can be named differently per industry.
+                </requirement>
+                <requirement priority="should">
+                    Potentially unlimited levels of hierarchy. But minimum 3 levels must be supported.
+                </requirement>
+                <requirement priority="must">
+                    Asset can belong to customer, location, cost center, vendor. We need to track ownership.
+                </requirement>
+                <requirement priority="must">
+                    Asset can be transitioned between locations, customers, cost centers, vendors. Track history.
+                    Transition must be made by standard BC documents (Transfer Order, Sales Order, Purchase Order).                    
+                </requirement>
+                <requirement priority="must">
+                    Parts of asset can be tracked as separate assets. E.g. engine of vehicle is asset itself.
+                </requirement>
+                <requirement priority="should">
+                    Analyse possibility to link asset movement to Subscription Billing module in BC.
+                </requirement>
+            </functional>
+        </requirements>
+    </current_task>
+
+
+    <!-- ========================================
+         NOTES & SPECIAL INSTRUCTIONS
+         Anything else Claude should know
+         ======================================== -->
+    <notes>     
+        <note type="reminder">
+            Always verify BC objects structure from Symbols/ before proposing changes.
+            Do NOT assume field numbers or names.
+        </note>        
+    </notes>
+</task>

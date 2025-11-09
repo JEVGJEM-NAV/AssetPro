@@ -1,0 +1,55 @@
+// Test task to verify skill auto-loading
+// usage claude --permission-mode bypassPermissions "$(Get-Content ..\.claude\ai_task_TEST_skills.xml -Raw)"
+
+<task type="bc_al_skill_verification">
+    <billing_preference>api</billing_preference>
+
+    <project_info>
+        <name>Asset Pro</name>
+        <repository_root>C:\GIT\JEMEL\JML_AssetPro</repository_root>
+        <al_project_folder>C:\GIT\JEMEL\JML_AssetPro\AL</al_project_folder>
+        <test_project_folder>C:\GIT\JEMEL\JML_AssetPro\Test</test_project_folder>
+        <claude_folder>C:\GIT\JEMEL\JML_AssetPro\.claude</claude_folder>
+    </project_info>
+
+    <requirement>
+        <description>
+            This is a test task to verify the hooks and skills auto-loading system.
+
+            TASK OVERVIEW:
+            I am planning to develop new Business Central AL extension functionality that will include:
+            - Table objects for data storage
+            - Page objects for user interface
+            - Codeunit objects for business logic
+            - Integration with base BC objects through extensions
+
+            DO NOT IMPLEMENT ANYTHING.
+
+            INSTEAD, your task is to:
+
+            1. Report which skills were automatically activated by the hooks system
+            2. List the skill names and explain why each was activated
+            3. Verify that at minimum "al-development-core" skill was loaded
+            4. Explain what each loaded skill provides
+            5. Confirm the hooks are working correctly
+
+            If skills were NOT automatically loaded:
+            - Report that hooks may not be working
+            - List what skills SHOULD have been loaded based on the task description
+            - Explain what configuration might be missing
+
+            This test should take less than 1 minute to complete.
+        </description>
+    </requirement>
+
+    <expected_result>
+        <output_format>markdown</output_format>
+        <content>
+            A brief report containing:
+            - List of auto-activated skills (from hook message)
+            - Explanation of why each skill was activated
+            - Confirmation that hooks are working
+            - Any issues detected with the configuration
+        </content>
+    </expected_result>
+</task>

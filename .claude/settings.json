@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Bash(node -e:*)",
+      "Bash(node .claude/hooks/src/userPromptSubmit.js)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/src/userPromptSubmit.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/src/contextMonitor.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/src/stopEvent.js"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/src/devDocsAutoUpdate.js"
+          }
+        ]
+      }
+    ]
+  }
+}
