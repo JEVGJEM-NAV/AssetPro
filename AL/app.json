@@ -1,8 +1,8 @@
 {
-  "id": "0e7df5a2-2732-4caf-a0e7-681a20c96f59",
+  "id": "0ddb90c7-27e8-46d5-9b65-bfda36890ec0",
   "name": "Asset Pro",
   "publisher": "JEMEL",
-  "version": "26.0.0.0",
+  "version": "26.0.2.0",
   "brief": "Easy connect your Microsoft Dynamics 365 Business Central with Shopify web store",
   "description": "ShopifyConnect is a tool that allows you to import orders from and to send items/customers to Shopify",
   "privacyStatement": "http://jemel.lv/BCApp/privacy_policy.pdf",
@@ -10,12 +10,12 @@
   "help": "https://jemel.lv/docs/asset-pro/",
   "url": "http://www.jemel.lv",
   "logo": "./jemel_logo_largel.png",
-  "platform": "26.0.0.0", 
-  "application": "26.0.0.0",  
+  "platform": "27.0.0.0", 
+  "application": "27.0.0.0",  
   "screenshots": [], 
   "internalsVisibleTo": [
     {
-      "id": "a62ab4b7-6914-455e-b854-cb71450306c1", 
+      "id": "16dbd1ef-edf1-439c-a586-85d2a92573cb", 
       "name": "Asset Pro Test", 
       "publisher": "JEMEL"
     }
