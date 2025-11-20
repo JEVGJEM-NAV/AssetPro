@@ -520,7 +520,16 @@ table 70182301 "JML AP Asset"
     local procedure ValidateParentAsset()
     var
         AssetValidator: Codeunit "JML AP Asset Validation";
+        RelationshipMgt: Codeunit "JML AP Relationship Mgt";
     begin
+        // Log attach event when parent is set (was blank, now populated)
+        if (xRec."Parent Asset No." = '') and ("Parent Asset No." <> '') then
+            RelationshipMgt.LogAttachEvent("No.", "Parent Asset No.", '', WorkDate());
+
+        // Log detach event when parent is cleared (was populated, now blank)
+        if (xRec."Parent Asset No." <> '') and ("Parent Asset No." = '') then
+            RelationshipMgt.LogDetachEvent("No.", xRec."Parent Asset No.", '', WorkDate());
+
         if "Parent Asset No." = '' then begin
             "Hierarchy Level" := 1;
             UpdateRootAssetNo();

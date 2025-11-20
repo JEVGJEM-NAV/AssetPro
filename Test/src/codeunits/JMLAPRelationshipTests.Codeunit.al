@@ -4,7 +4,7 @@ codeunit 50109 "JML AP Relationship Tests"
     TestPermissions = Disabled;
 
     var
-        Assert: Codeunit "Library - Assert";
+        Assert: Codeunit "Library Assert";
 
     [Test]
     procedure TestLogAttachEvent_CreatesEntryWithCorrectFields()
@@ -231,6 +231,128 @@ codeunit 50109 "JML AP Relationship Tests"
         CleanupTestData();
     end;
 
+    [Test]
+    procedure TestAttachViaFieldValidation_CreatesRelationshipEntry()
+    var
+        ParentAsset: Record "JML AP Asset";
+        ChildAsset: Record "JML AP Asset";
+        RelationshipEntry: Record "JML AP Asset Relation Entry";
+    begin
+        // [SCENARIO] Setting Parent Asset No. field creates attach relationship entry
+
+        // [GIVEN] Two assets with no parent relationship
+        CreateTestAsset(ParentAsset, 'PARENT-006', 'Parent Asset for Field Test');
+        CreateTestAsset(ChildAsset, 'CHILD-006', 'Child Asset for Field Test');
+
+        // [WHEN] Set Parent Asset No. field on child asset
+        ChildAsset.Get(ChildAsset."No."); // Refresh to ensure xRec is set correctly
+        ChildAsset.Validate("Parent Asset No.", ParentAsset."No.");
+        ChildAsset.Modify(true);
+
+        // [THEN] Attach entry created with holder captured
+        RelationshipEntry.SetRange("Asset No.", ChildAsset."No.");
+        RelationshipEntry.SetRange("Parent Asset No.", ParentAsset."No.");
+        RelationshipEntry.SetRange("Entry Type", RelationshipEntry."Entry Type"::Attach);
+        Assert.RecordIsNotEmpty(RelationshipEntry);
+
+        RelationshipEntry.FindFirst();
+        Assert.AreEqual(ChildAsset."Current Holder Type", RelationshipEntry."Holder Type at Entry", 'Holder type should be captured at attach');
+        Assert.AreEqual(ChildAsset."Current Holder Code", RelationshipEntry."Holder Code at Entry", 'Holder code should be captured at attach');
+
+        // [CLEANUP]
+        CleanupTestData();
+    end;
+
+    [Test]
+    procedure TestDetachViaFieldClear_CreatesDetachEntry()
+    var
+        ParentAsset: Record "JML AP Asset";
+        ChildAsset: Record "JML AP Asset";
+        RelationshipEntry: Record "JML AP Asset Relation Entry";
+        AttachEntryNo: Integer;
+    begin
+        // [SCENARIO] Clearing Parent Asset No. field creates detach relationship entry
+
+        // [GIVEN] Asset with parent relationship
+        CreateTestAsset(ParentAsset, 'PARENT-007', 'Parent Asset for Detach Test');
+        CreateTestAsset(ChildAsset, 'CHILD-007', 'Child Asset for Detach Test');
+        ChildAsset.Get(ChildAsset."No.");
+        ChildAsset.Validate("Parent Asset No.", ParentAsset."No.");
+        ChildAsset.Modify(true);
+
+        // Record the attach entry count
+        RelationshipEntry.SetRange("Asset No.", ChildAsset."No.");
+        AttachEntryNo := RelationshipEntry.Count();
+
+        // [WHEN] Clear Parent Asset No. field
+        ChildAsset.Get(ChildAsset."No."); // Refresh xRec
+        ChildAsset.Validate("Parent Asset No.", '');
+        ChildAsset.Modify(true);
+
+        // [THEN] Detach entry created
+        RelationshipEntry.SetRange("Entry Type", RelationshipEntry."Entry Type"::Detach);
+        Assert.RecordIsNotEmpty(RelationshipEntry);
+
+        // [THEN] Both attach and detach entries exist
+        RelationshipEntry.Reset();
+        RelationshipEntry.SetRange("Asset No.", ChildAsset."No.");
+        Assert.AreEqual(AttachEntryNo + 1, RelationshipEntry.Count(), 'Should have both attach and detach entries');
+
+        // [CLEANUP]
+        CleanupTestData();
+    end;
+
+    [Test]
+    procedure TestSubassetTransferValidation_BlockedThenAllowed()
+    var
+        ParentAsset: Record "JML AP Asset";
+        ChildAsset: Record "JML AP Asset";
+        Location1: Record Location;
+        Location2: Record Location;
+        AssetJournalLine: Record "JML AP Asset Journal Line";
+        AssetJnlPost: Codeunit "JML AP Asset Jnl.-Post";
+    begin
+        // [SCENARIO] Subasset transfer blocked when attached, allowed when detached
+
+        // [GIVEN] Asset with parent (subasset)
+        CreateTestAsset(ParentAsset, 'PARENT-008', 'Parent Asset for Transfer Test');
+        CreateTestAsset(ChildAsset, 'CHILD-008', 'Child Asset for Transfer Test');
+        CreateTestLocation(Location1, 'LOC-008A');
+        CreateTestLocation(Location2, 'LOC-008B');
+
+        ChildAsset.Get(ChildAsset."No.");
+        ChildAsset.Validate("Parent Asset No.", ParentAsset."No.");
+        ChildAsset."Current Holder Type" := ChildAsset."Current Holder Type"::Location;
+        ChildAsset."Current Holder Code" := Location1.Code;
+        ChildAsset.Modify(true);
+
+        // [WHEN] Attempt to transfer subasset
+        CreateTestJournalLine(AssetJournalLine, ChildAsset."No.", Location1.Code, Location2.Code);
+
+        // [THEN] Error raised (transfer blocked)
+        asserterror AssetJnlPost.Run(AssetJournalLine);
+        Assert.ExpectedError('Cannot transfer subasset');
+
+        // [WHEN] Detach from parent
+        ChildAsset.Get(ChildAsset."No."); // Refresh xRec
+        ChildAsset.Validate("Parent Asset No.", '');
+        ChildAsset.Modify(true);
+
+        // Recreate journal line after detach
+        AssetJournalLine.DeleteAll();
+        CreateTestJournalLine(AssetJournalLine, ChildAsset."No.", Location1.Code, Location2.Code);
+
+        // [THEN] Transfer succeeds
+        AssetJnlPost.Run(AssetJournalLine);
+
+        // Verify asset holder changed
+        ChildAsset.Get(ChildAsset."No.");
+        Assert.AreEqual(Location2.Code, ChildAsset."Current Holder Code", 'Asset should be transferred to new location after detach');
+
+        // [CLEANUP]
+        CleanupTestData();
+    end;
+
     local procedure CreateTestAsset(var Asset: Record "JML AP Asset"; AssetNo: Code[20]; Description: Text[100])
     var
         AssetSetup: Record "JML AP Asset Setup";
@@ -270,13 +392,52 @@ codeunit 50109 "JML AP Relationship Tests"
         Location.Insert(true);
     end;
 
+    local procedure CreateTestJournalLine(var AssetJournalLine: Record "JML AP Asset Journal Line"; AssetNo: Code[20]; FromLocationCode: Code[10]; ToLocationCode: Code[10])
+    var
+        AssetJournalBatch: Record "JML AP Asset Journal Batch";
+    begin
+        // Get or create test journal batch
+        if not AssetJournalBatch.Get('TEST') then begin
+            AssetJournalBatch.Init();
+            AssetJournalBatch.Name := 'TEST';
+            AssetJournalBatch.Description := 'Test Batch';
+            AssetJournalBatch.Insert(true);
+        end;
+
+        AssetJournalLine.Init();
+        AssetJournalLine."Journal Batch Name" := AssetJournalBatch.Name;
+        AssetJournalLine."Line No." := 10000;
+        AssetJournalLine."Document No." := 'TEST-001'; // Add required Document No.
+        AssetJournalLine."Asset No." := AssetNo;
+        AssetJournalLine."New Holder Type" := AssetJournalLine."New Holder Type"::Location;
+        AssetJournalLine."New Holder Code" := ToLocationCode;
+        AssetJournalLine."Posting Date" := WorkDate();
+        AssetJournalLine.Insert(true);
+    end;
+
     local procedure CleanupTestData()
     var
         Asset: Record "JML AP Asset";
         RelationshipEntry: Record "JML AP Asset Relation Entry";
+        HolderEntry: Record "JML AP Holder Entry";
         Customer: Record Customer;
         Location: Record Location;
+        AssetJournalBatch: Record "JML AP Asset Journal Batch";
+        AssetJournalLine: Record "JML AP Asset Journal Line";
     begin
+        // Delete test journal lines and batches
+        AssetJournalLine.Reset();
+        AssetJournalLine.SetRange("Journal Batch Name", 'TEST');
+        AssetJournalLine.DeleteAll(true);
+
+        if AssetJournalBatch.Get('TEST') then
+            AssetJournalBatch.Delete(true);
+
+        // Delete test holder entries
+        HolderEntry.Reset();
+        HolderEntry.SetFilter("Asset No.", 'CHILD-*|PARENT-*');
+        HolderEntry.DeleteAll(true);
+
         // Delete test relationship entries
         RelationshipEntry.Reset();
         RelationshipEntry.SetFilter("Asset No.", 'CHILD-*');

@@ -76,9 +76,49 @@ page 70182332 "JML AP Asset List"
                 RunObject = page "JML AP Holder Entries";
                 RunPageLink = "Asset No." = field("No.");
             }
+            action(RelationshipHistory)
+            {
+                ApplicationArea = All;
+                Caption = 'Relationship History';
+                ToolTip = 'View the attach/detach history for the selected asset.';
+                Image = History;
+                RunObject = page "JML AP Relationship Entries";
+                RunPageLink = "Asset No." = field("No.");
+            }
         }
         area(Processing)
         {
+            action(DetachFromParent)
+            {
+                ApplicationArea = All;
+                Caption = 'Detach from Parent';
+                ToolTip = 'Detach selected assets from their parent assets.';
+                Image = UnLinkAccount;
+
+                trigger OnAction()
+                var
+                    Asset: Record "JML AP Asset";
+                    DetachedCount: Integer;
+                begin
+                    CurrPage.SetSelectionFilter(Asset);
+                    if Asset.FindSet() then begin
+                        repeat
+                            if Asset."Parent Asset No." <> '' then begin
+                                Asset."Parent Asset No." := ''; // Triggers OnValidate which logs detach
+                                Asset.Modify(true);
+                                DetachedCount += 1;
+                            end;
+                        until Asset.Next() = 0;
+                    end;
+
+                    if DetachedCount > 0 then
+                        Message('%1 asset(s) detached from parent.', DetachedCount)
+                    else
+                        Message('No assets with parent relationships were selected.');
+
+                    CurrPage.Update(false);
+                end;
+            }
             action(TransferAsset)
             {
                 ApplicationArea = All;

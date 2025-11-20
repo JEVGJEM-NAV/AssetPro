@@ -300,6 +300,15 @@ page 70182333 "JML AP Asset Card"
                 RunObject = page "JML AP Holder Entries";
                 RunPageLink = "Asset No." = field("No.");
             }
+            action(RelationshipHistory)
+            {
+                ApplicationArea = All;
+                Caption = 'Relationship History';
+                ToolTip = 'View the complete attach/detach history for this asset.';
+                Image = History;
+                RunObject = page "JML AP Relationship Entries";
+                RunPageLink = "Asset No." = field("No.");
+            }
             action(ChildrenAssets)
             {
                 ApplicationArea = All;
@@ -321,6 +330,25 @@ page 70182333 "JML AP Asset Card"
         }
         area(Processing)
         {
+            action(DetachFromParent)
+            {
+                ApplicationArea = All;
+                Caption = 'Detach from Parent';
+                ToolTip = 'Detach this asset from its parent asset and log the detach event.';
+                Image = UnLinkAccount;
+                Enabled = Rec."Parent Asset No." <> '';
+
+                trigger OnAction()
+                begin
+                    if Rec."Parent Asset No." = '' then
+                        Error('This asset is not attached to a parent.');
+
+                    Rec."Parent Asset No." := ''; // Triggers OnValidate which logs detach
+                    Rec.Modify(true);
+                    CurrPage.Update(false);
+                    Message('Asset detached from parent.');
+                end;
+            }
             action(TransferAsset)
             {
                 ApplicationArea = All;
