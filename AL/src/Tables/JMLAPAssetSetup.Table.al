@@ -19,6 +19,20 @@ table 70182300 "JML AP Asset Setup"
             TableRelation = "No. Series";
         }
 
+        field(11; "Transfer Order Nos."; Code[20])
+        {
+            Caption = 'Transfer Order Nos.';
+            ToolTip = 'Specifies the number series for asset transfer orders.';
+            TableRelation = "No. Series";
+        }
+
+        field(12; "Posted Transfer Nos."; Code[20])
+        {
+            Caption = 'Posted Transfer Nos.';
+            ToolTip = 'Specifies the number series for posted asset transfers.';
+            TableRelation = "No. Series";
+        }
+
         // Defaults
         field(20; "Default Industry Code"; Code[20])
         {

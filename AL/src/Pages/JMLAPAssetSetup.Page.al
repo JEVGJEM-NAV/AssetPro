@@ -12,15 +12,31 @@ page 70182330 "JML AP Asset Setup"
     {
         area(Content)
         {
-            group(General)
+            group(Numbering)
             {
-                Caption = 'General';
+                Caption = 'Numbering';
 
                 field("Asset Nos."; Rec."Asset Nos.")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the number series for assets.';
                 }
+                field("Transfer Order Nos."; Rec."Transfer Order Nos.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the number series for asset transfer orders.';
+                }
+                field("Posted Transfer Nos."; Rec."Posted Transfer Nos.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the number series for posted asset transfers.';
+                }
+            }
+
+            group(General)
+            {
+                Caption = 'General';
+
                 field("Default Industry Code"; Rec."Default Industry Code")
                 {
                     ApplicationArea = All;
