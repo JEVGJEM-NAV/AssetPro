@@ -21,7 +21,7 @@
     4. Hook system will auto-activate appropriate skills
 -->
 
-// usage claude --permission-mode bypassPermissions "$(Get-Content .\.claude\ai_implementation_phase1.xml -Raw)"
+// usage claude --permission-mode bypassPermissions "$(Get-Content .\.claude\ai_implementation_phase2.xml -Raw)"
 
 <task type="bc_al_development">
    <project_info>
@@ -32,8 +32,8 @@
 		<test_project_folder>C:\GIT\JEMEL\JML_AssetPro\Test</test_project_folder>
 		<claude_folder>C:\GIT\JEMEL\JML_AssetPro\.claude</claude_folder>
 		<description>Multi-industry asset management platform for Microsoft Business Central that adapts to any industry</description>
-		<documentation_folder>C:\GIT\JEMEL\jemel_web_2025\docusaurus\docs\asset-pro</documentation_folder>
-        <tagline>Track any asset, any industry, your way</tagline>
+		<tagline>Track any asset, any industry, your way</tagline>
+        <documentation_folder>C:\GIT\JEMEL\jemel_web_2025\docusaurus\docs\asset-pro</documentation_folder>
         <test_info>
             <container>bc27w1</container>
             <user>admin</user>
@@ -49,15 +49,9 @@
         <research>
             <document>
                 <title>Analysis document for implementation</title>
-                <location>.\.claude\Analysis_and_Planning_Asset_Pro_v2_1.md</location>
+                <location>.\.claude\Analysis_and_Planning_Asset_Pro_Phase2_v2.md</location>
             </document>            
         </research>
-        previous_tasks>
-            <task>
-                <title>Analysis and Planning for Asset Pro Phase 1</title>
-                <location>ai_analysis_and_planning_phase1.xml</location>
-            </task>
-        </previous_tasks>
     </external_references>
 
 
@@ -71,7 +65,7 @@
                 Build complete universal Asset Management solution.
             </goal>
             <current_status>
-                Fix issues in Phase 1 implementation before moving to Phase 2.
+                Analysis if phase 1 ready, start to implement phase 2.
             </current_status>
         </overall_project>
     </context>
@@ -85,26 +79,14 @@
         <title>Implementation</title>
 
         <description>
-            We have made implementation of Phase 1 for Asset Pro. Now it's time to fix identified issues and polish the code.
+            We need to implement Asset Management module for Business Central according to analysis document.
+            Follow the requirements and specifications outlined in the analysis document closely.
+            Use full cycle of AL Development skill to deliver high-quality code. 
+            You need to create application objects, write code, and create test cases.
+            Follow best practices for AL development, including naming conventions, code structure, and documentation.
+            Ensure code is well-tested with automated tests.
+            After all is done, prepare prepare documentation for the new module.
         </description>        
-        <issues_to_address>
-            <issue>
-                Asset Wizard to add to Assisted Setup list
-            </issue>
-            <issue>
-                Asset Setup Wizard button Run not visible, not running. To fix.
-            </issue>
-            <issue>
-                Asset card 
-                a) when selecting Parent asset, it should be only from parent level, not all.
-                b) need button to open Children Assets tree (all underlying levels)
-                c) missing attributes Factbox with link to current asset, and action buttons to open list of attributes (like in Item card)
-                d) missing button to open components of asset
-            </issue>
-            <issue>
-                Asset card, list - GetLevelCaption and GetLevelCaptionPlural not used, how planned.
-            </issue>
-        </issues_to_address>
     </current_task>
 
 
@@ -116,9 +98,9 @@
         <note type="reminder">
             Always verify BC objects structure from Symbols/ before proposing changes.
             Do NOT assume field numbers or names.
-        </note>        
+        </note>                   
         <note type="critical">
             use relevant skills for BC AL development, including AL Development Core skill            
-        </note>                    
+        </note>                 
     </notes>
 </task>

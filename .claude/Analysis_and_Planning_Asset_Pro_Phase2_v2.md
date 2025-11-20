@@ -4,13 +4,13 @@
 **Phase:** Phase 2 - Asset Transfer and Document Integration
 **Publisher:** JEMEL
 **Date:** 2025-11-20
-**Version:** 2.2 (Object IDs Adjusted for Phase 1 Conflicts)
+**Version:** 2.3 (Manual Holder Change Control Added)
 **Status:** Architecture Approved - Ready for Implementation
 **Workflow Mode:** Analysis (Relaxed)
 
 ---
 
-## Document Changes (v1 → v2 → v2.1)
+## Document Changes (v1 → v2 → v2.1 → v2.2 → v2.3)
 
 **Critical Adjustments (v2.0):**
 
@@ -32,6 +32,13 @@ Due to Phase 1 implementation sessions, the following object IDs are now in use 
 - All Phase 2 Tables shifted: 70182309-70182326 → **70182311-70182328** (shift +2)
 - All Phase 2 Enums shifted: 70182406-70182407 → **70182408-70182409** (shift +2)
 - All references throughout document updated accordingly
+
+**Manual Holder Change Control (v2.3):**
+
+Two new requirements added to control direct holder changes on Asset Card:
+
+7. **R7 - Setup Checkbox:** New field "Block Manual Holder Change" in Setup to prevent direct editing of holder fields on Asset Card
+8. **R8 - Manual Change Registration:** When manual changes are allowed, they must be automatically registered in Holder Entry ledger
 
 ---
 
@@ -316,6 +323,184 @@ Transfer Vehicle (Parent) to Customer A
 - Detach creates Relationship Entry (type = Detach)
 - After detach, asset can be transferred independently
 - Re-attach supported (sets Parent Asset No., creates Relationship Entry type = Attach)
+
+---
+
+### R7: Manual Holder Change Control (MUST) - **NEW**
+
+**Business Need:** Provide administrators with control over whether users can directly edit holder fields on the Asset Card, or must use formal transfer processes (journals/documents).
+
+**Functional Requirements:**
+
+**Setup Configuration:**
+- New field in Table 70182300 "JML AP Asset Setup": `Block Manual Holder Change` (Boolean)
+- Default value: `false` (allows manual changes for backward compatibility)
+- Visible on Setup page with clear description
+
+**Asset Card Behavior:**
+
+When `Block Manual Holder Change = true`:
+- Fields `Current Holder Type` and `Current Holder Code` become non-editable on Asset Card
+- Fields remain editable = false on Asset List
+- Attempting to modify via code triggers error: "Direct holder changes are blocked. Use Asset Journal or Transfer Orders."
+- Holder changes ONLY allowed through:
+  - Asset Journal (Table 70182312)
+  - Asset Transfer Order (Table 70182313)
+  - BC Document Integration (Sales/Purchase/Transfer Orders)
+
+When `Block Manual Holder Change = false`:
+- Fields `Current Holder Type` and `Current Holder Code` remain editable
+- Manual changes trigger **automatic ledger registration** (see R8)
+- Provides flexibility for simple scenarios or data corrections
+
+**Validation Logic:**
+```al
+trigger OnValidate() // on Current Holder Type/Code fields
+var
+    AssetSetup: Record "JML AP Asset Setup";
+begin
+    AssetSetup.Get();
+    if AssetSetup."Block Manual Holder Change" then
+        Error('Direct holder changes are blocked by setup. Use Asset Journal or Transfer Orders to change holders.');
+
+    // If allowed, proceed with R8 logic (automatic registration)
+end;
+```
+
+**Use Cases:**
+- **Strict Control:** Large organizations requiring audit trail and approval workflow → Enable blocking
+- **Flexible Data Management:** Small organizations or during initial setup → Allow manual changes
+- **Data Corrections:** Temporarily disable blocking for corrections, then re-enable
+
+---
+
+### R8: Manual Holder Change Registration (MUST) - **NEW**
+
+**Business Need:** When manual holder changes are permitted, automatically create holder entries to maintain complete audit trail.
+
+**Functional Requirements:**
+
+**Automatic Registration Trigger:**
+When user modifies `Current Holder Type` or `Current Holder Code` on Asset Card (and `Block Manual Holder Change = false`):
+- Automatically call Transfer Management to create holder entries
+- Use Document Type = "Manual"
+- Document No. = System-generated or user-provided reference
+- Posting Date = WORKDATE by default (user can specify)
+- Reason Code = Optional
+
+**Implementation Pattern:**
+```al
+// In Table 70182301 "JML AP Asset"
+trigger OnModify()
+var
+    AssetSetup: Record "JML AP Asset Setup";
+    AssetTransferMgt: Codeunit "JML AP Transfer Mgt";
+    OldHolderType: Enum "JML AP Holder Type";
+    OldHolderCode: Code[20];
+begin
+    AssetSetup.Get();
+
+    // Only auto-register if manual changes are allowed
+    if not AssetSetup."Block Manual Holder Change" then begin
+        // Detect holder change
+        if (xRec."Current Holder Type" <> "Current Holder Type") or
+           (xRec."Current Holder Code" <> "Current Holder Code") then begin
+
+            // Store old values
+            OldHolderType := xRec."Current Holder Type";
+            OldHolderCode := xRec."Current Holder Code";
+
+            // Validate new holder exists
+            ValidateHolderExists("Current Holder Type", "Current Holder Code");
+
+            // Create holder entries via Transfer Management
+            RegisterManualHolderChange(
+                OldHolderType,
+                OldHolderCode,
+                "Current Holder Type",
+                "Current Holder Code");
+        end;
+    end;
+end;
+
+local procedure RegisterManualHolderChange(
+    OldHolderType: Enum "JML AP Holder Type";
+    OldHolderCode: Code[20];
+    NewHolderType: Enum "JML AP Holder Type";
+    NewHolderCode: Code[20])
+var
+    HolderEntry: Record "JML AP Holder Entry";
+    NextEntryNo: Integer;
+    TransactionNo: Integer;
+begin
+    // Get next transaction number
+    if HolderEntry.FindLast() then begin
+        NextEntryNo := HolderEntry."Entry No." + 1;
+        TransactionNo := HolderEntry."Transaction No." + 1;
+    end else begin
+        NextEntryNo := 1;
+        TransactionNo := 1;
+    end;
+
+    // Create Transfer Out entry (old holder)
+    HolderEntry.Init();
+    HolderEntry."Entry No." := NextEntryNo;
+    HolderEntry."Transaction No." := TransactionNo;
+    HolderEntry."Asset No." := "No.";
+    HolderEntry."Entry Type" := HolderEntry."Entry Type"::"Transfer Out";
+    HolderEntry."Holder Type" := OldHolderType;
+    HolderEntry."Holder Code" := OldHolderCode;
+    HolderEntry."Posting Date" := WorkDate();
+    HolderEntry."Document Type" := "JML AP Document Type"::Manual;
+    HolderEntry."Document No." := 'MANUAL-' + Format(CurrentDateTime, 0, '<Year4><Month,2><Day,2><Hours24><Minutes,2><Seconds,2>');
+    HolderEntry."User ID" := UserId;
+    HolderEntry."Description" := StrSubstNo('Manual holder change on Asset Card');
+    HolderEntry.Insert(true);
+
+    // Create Transfer In entry (new holder)
+    NextEntryNo += 1;
+    HolderEntry.Init();
+    HolderEntry."Entry No." := NextEntryNo;
+    HolderEntry."Transaction No." := TransactionNo;
+    HolderEntry."Asset No." := "No.";
+    HolderEntry."Entry Type" := HolderEntry."Entry Type"::"Transfer In";
+    HolderEntry."Holder Type" := NewHolderType;
+    HolderEntry."Holder Code" := NewHolderCode;
+    HolderEntry."Posting Date" := WorkDate();
+    HolderEntry."Document Type" := "JML AP Document Type"::Manual;
+    HolderEntry."Document No." := 'MANUAL-' + Format(CurrentDateTime, 0, '<Year4><Month,2><Day,2><Hours24><Minutes,2><Seconds,2>');
+    HolderEntry."User ID" := UserId;
+    HolderEntry."Description" := StrSubstNo('Manual holder change on Asset Card');
+    HolderEntry.Insert(true);
+
+    // Update "Current Holder Since"
+    "Current Holder Since" := WorkDate();
+end;
+```
+
+**Validation Rules:**
+- New holder must exist in respective master table
+- New holder must be different from old holder
+- If asset has children and subasset propagation is enabled, create entries for children too
+- Posting date follows same validation as Asset Journal (no backdating)
+
+**User Experience:**
+1. User opens Asset Card
+2. User changes `Current Holder Type` from "Location" to "Customer"
+3. User selects Customer No. "C-10000"
+4. User clicks OK or moves to next field
+5. **System automatically:**
+   - Creates Transfer Out entry (from old Location)
+   - Creates Transfer In entry (to Customer C-10000)
+   - Updates "Current Holder Since" to today
+   - Shows confirmation message: "Holder change registered. 2 entries created."
+6. User can view entries in Holder Entries page
+
+**Benefits:**
+- ✅ Complete audit trail even for manual changes
+- ✅ No "orphan" holder changes without ledger entries
+- ✅ Consistent with formal transfer processes
+- ✅ Supports compliance and auditing requirements
 
 ---
 
@@ -2215,9 +2400,66 @@ profile "JML AP ASSET MANAGER"
 
 ---
 
-### Phase 2G: Testing & Polish (Week 14) - **UPDATED**
+### Phase 2G: Manual Holder Change Control (Week 14) - **NEW (v2.3)**
 
-**Week 14: Quality Assurance**
+**Week 14: R7 & R8 Implementation**
+
+**Day 1-2: Setup Enhancement (R7)**
+- Update Table 70182300 "JML AP Asset Setup"
+  - Add field(40; "Block Manual Holder Change"; Boolean)
+  - InitValue = false
+  - Add description and tooltip
+- Update Setup Page to display new field
+- Test: Toggle setting, verify field visibility
+
+**Day 3-4: Asset Card Editable Control (R7)**
+- Update Asset Card page(s) to make holder fields conditionally editable
+- Add validation logic to Current Holder Type/Code fields
+- Test blocking behavior:
+  - Enable blocking → fields become non-editable
+  - Attempt code-based modification → error message
+  - Disable blocking → fields become editable
+
+**Day 4-5: Automatic Registration Logic (R8)**
+- Add OnModify trigger to Table 70182301 "JML AP Asset"
+- Implement RegisterManualHolderChange() procedure
+- Create holder entries (Transfer Out + Transfer In)
+- Update "Current Holder Since" field
+- Test automatic registration:
+  - Change holder on Asset Card
+  - Verify 2 entries created in Holder Entries
+  - Verify Transaction No. linking
+  - Verify Document Type = "Manual"
+  - Verify auto-generated Document No.
+
+**Testing Scenarios:**
+1. **Blocking Enabled:**
+   - Try to edit holder field → Error shown
+   - Use Asset Journal → Works correctly
+   - Use Transfer Order → Works correctly
+
+2. **Blocking Disabled:**
+   - Edit holder field on Asset Card → Success
+   - Check Holder Entries → 2 new entries created
+   - Verify audit trail complete
+
+3. **Edge Cases:**
+   - Change to same holder → Should error
+   - Change to non-existent holder → Should error
+   - Rapid changes → Each creates separate entry pair
+
+**Deliverables:**
+- Setup field added and functional
+- Blocking behavior working correctly
+- Automatic registration creating proper ledger entries
+- All validation rules enforced
+- User documentation updated
+
+---
+
+### Phase 2H: Testing & Polish (Week 15) - **UPDATED**
+
+**Week 15: Quality Assurance**
 - Run all unit tests (AAA pattern)
 - Run all integration tests
 - Performance testing (1000 assets)
@@ -2227,13 +2469,15 @@ profile "JML AP ASSET MANAGER"
 - Code review
 - Final demo
 
-**Additional Test Scenarios (v2):**
+**Additional Test Scenarios (v2.3):**
 - Scenario: **Posting date validation** (backdate attempt, future date, user setup limits)
 - Scenario: **Shipment-based transfer** (Sales Order ship only, invoice only, ship & invoice)
 - Scenario: **Purchase Receipt-based transfer**
 - Scenario: **Transfer Order shipment/receipt split**
 - Scenario: **OnDelete cascade** (delete Sales Order with asset lines)
 - Scenario: **Journal pattern** (Asset Transfer Order posts via journal)
+- Scenario: **Manual holder change blocking** (R7 - enable/disable blocking)
+- Scenario: **Manual holder change registration** (R8 - automatic ledger entries)
 
 **Deliverables:**
 - All tests passing
@@ -2301,6 +2545,31 @@ Phase 2 is considered complete when:
   - [ ] All navigation links work correctly
   - [ ] Performance: Role Center loads in < 2 seconds
   - [ ] Cues refresh after posting transactions
+
+- [ ] **Manual Holder Change Control** (NEW - v2.3)
+  - [ ] **R7: Setup Checkbox Implementation**
+    - [ ] Field "Block Manual Holder Change" added to Table 70182300
+    - [ ] Setup page displays new field with description
+    - [ ] When enabled: holder fields become non-editable on Asset Card
+    - [ ] When enabled: validation error blocks programmatic changes
+    - [ ] When disabled: holder fields remain editable
+  - [ ] **R8: Automatic Registration Implementation**
+    - [ ] OnModify trigger detects holder changes
+    - [ ] RegisterManualHolderChange() procedure creates 2 holder entries
+    - [ ] Transfer Out entry created for old holder
+    - [ ] Transfer In entry created for new holder
+    - [ ] Document Type = "Manual"
+    - [ ] Document No. auto-generated with timestamp
+    - [ ] Transaction No. links both entries
+    - [ ] "Current Holder Since" updated to WorkDate
+    - [ ] Validation: new holder must exist
+    - [ ] Validation: new holder must differ from old holder
+    - [ ] User confirmation message shown after registration
+  - [ ] **Integration Testing**
+    - [ ] Blocking enabled → Asset Journal works
+    - [ ] Blocking enabled → Transfer Orders work
+    - [ ] Blocking disabled → Manual changes create ledger entries
+    - [ ] Edge cases handled (same holder, non-existent holder, rapid changes)
 
 - [ ] **Quality Gates**
   - [ ] All unit tests passing (50100-50110)
@@ -2380,11 +2649,12 @@ Phase 2 is considered complete when:
 | 2.0 | 2025-11-20 | Claude | **MAJOR UPDATE:** R1-Posting date validation, R2-Remove Include Children, R3-Simplify Status enum, R4-Journal pattern for posting, R5-OnDelete cascade, R6-Shipment-based integration |
 | 2.1 | 2025-11-20 | Claude | **ENHANCEMENT:** Added Component 7 - Asset Management Role Center with dedicated user profile, KPI tiles, and dynamic headlines (+1 table, +3 pages) |
 | 2.2 | 2025-11-20 | Claude | **OBJECT ID ADJUSTMENT:** Resolved conflicts with Phase 1 objects. Tables shifted 70182309-70182326 → 70182311-70182328 (+2). Enums shifted 70182406-70182407 → 70182408-70182409 (+2). All references updated throughout document. |
+| 2.3 | 2025-11-20 | Claude | **MANUAL HOLDER CHANGE CONTROL:** Added R7 (Setup checkbox to block manual holder changes) and R8 (Automatic ledger registration for manual changes). New field in Table 70182300 "JML AP Asset Setup". OnModify trigger in Table 70182301 "JML AP Asset". New implementation Phase 2G (Week 14). Timeline extended by 1 week (Phase 2H = Week 15). |
 
-**Status:** READY FOR IMPLEMENTATION - Object IDs Adjusted and Verified
+**Status:** READY FOR IMPLEMENTATION - Manual Holder Change Control Requirements Added
 
 **Next Review Date:** 2025-11-22 (after stakeholder approval)
 
 ---
 
-**End of Document (v2)**
+**End of Document (v2.3)**

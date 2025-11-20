@@ -2,15 +2,15 @@
   "conversationId": "conv-1762434865505-078b6d57",
   "activeSkills": {
     "al-development-core": {
-      "activatedAt": "2025-11-20T20:05:07.139Z",
-      "lastUsedAt": "2025-11-20T20:12:12.596Z",
+      "activatedAt": "2025-11-20T21:27:52.613Z",
+      "lastUsedAt": "2025-11-20T21:30:08.418Z",
       "phase": null,
       "usageCount": 2,
       "status": "active",
-      "relevanceScore": 1
+      "relevanceScore": 0.2
     }
   },
   "completedSkills": [],
   "conversationContext": "bc-development",
-  "lastPromptAt": "2025-11-20T20:12:12.596Z"
+  "lastPromptAt": "2025-11-20T21:30:08.418Z"
 }
