@@ -25,7 +25,7 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 | 1.3 | Asset Transfer Order - Tables | 4 tables, 1 enum | ✅ **COMPLETE** | 41f2340 |
 | 1.4 | Asset Transfer Order - Pages | 6 pages | ✅ **COMPLETE** | 279974f |
 | 1.5 | Asset Transfer Order - Posting | 1 codeunit, tests | ✅ **COMPLETE** | 2e0eabf |
-| 2.1 | Relationship Entry Infrastructure | 1 table, 1 enum, 1 page, 1 codeunit | Pending | - |
+| 2.1 | Relationship Entry Infrastructure | 1 table, 1 enum, 1 page, 1 codeunit | ✅ **COMPLETE** | 6aa8467 |
 | 2.2 | Asset Card Enhancements | 2 page extensions, tests | Pending | - |
 | 3.1 | Manual Holder Change Control | Table enhancements, tests | Pending | - |
 | 4.1 | Sales Asset Line Tables | 4 tables | Pending | - |
@@ -37,7 +37,7 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 | 6.2 | Transfer Integration Logic | 2 extensions, tests | Pending | - |
 | 7.1 | Role Center Implementation | 1 table, 3 pages, 1 profile | Pending | - |
 
-**Progress: 5/17 stages complete (29%)**
+**Progress: 6/17 stages complete (35%)**
 
 ---
 
@@ -208,29 +208,40 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 
 ## Stage 2: Relationship Tracking
 
-### Stage 2.1: Relationship Entry Infrastructure ⏸️ PENDING
+### Stage 2.1: Relationship Entry Infrastructure ✅ COMPLETE
 
 **Objective:** Implement attach/detach audit trail (R5)
 
-**Objects to Create:**
-- Table 70182317 "JML AP Asset Relationship Entry"
-- Enum 70182408 "JML AP Relationship Entry Type" (Attach, Detach)
-- Page 70182365 "JML AP Relationship Entries"
-- Codeunit 70182393 "JML AP Relationship Mgt"
+**Objects Created:**
+- ✅ Enum 70182408 "JML AP Relationship Entry Type"
+- ✅ Table 70182317 "JML AP Asset Relation Entry"
+- ✅ Page 70182365 "JML AP Relationship Entries"
+- ✅ Codeunit 70182393 "JML AP Relationship Mgt"
+- ✅ Test Codeunit 50109 "JML AP Relationship Tests" (5 test procedures)
 
-**Key Features:**
-- Log every Attach event
-- Log every Detach event
-- Capture holder at moment of change
-- Entry No., Transaction No., Posting Date
-- Reason Code supported
+**Key Features Implemented:**
+- ✅ LogAttachEvent - Creates attach relationship entry
+- ✅ LogDetachEvent - Creates detach relationship entry
+- ✅ Captures holder information at moment of relationship change
+- ✅ Transaction No. linking for audit trail
+- ✅ Reason Code supported
+- ✅ GetRelationshipHistory - Retrieves complete audit history
+- ✅ GetComponentsAtDate - Historical "as-of-date" component queries
 
 **Testing:**
-- Unit: LogAttachEvent creates correct entry
-- Unit: LogDetachEvent creates correct entry
-- Build: 0 errors, 0 warnings
+- ✅ 5 test procedures created covering:
+  - Happy path: Attach event logging
+  - Happy path: Detach event logging
+  - Edge case: Multiple attach/detach cycles
+  - Integration: Holder captured at moment of change
+  - Integration: Historical date queries
+- ⚠️ Tests written but pending test library setup
 
-**Git Commit:** "Phase 2 Stage 2.1 - Relationship tracking infrastructure"
+**Build Status:**
+- ✅ Main App: 0 errors, 0 warnings
+- ✅ Published to container bc27w1
+
+**Git Commit:** `6aa8467` "Phase 2 Stage 2.1 - Relationship Entry Infrastructure"
 
 ---
 
@@ -525,7 +536,7 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 - [x] **Stage 1.3** - Asset Transfer Order tables (Git: 41f2340)
 - [x] **Stage 1.4** - Asset Transfer Order pages (Git: 279974f)
 - [x] **Stage 1.5** - Asset Transfer Order posting logic (Git: 2e0eabf)
-- [ ] Stage 2.1 - Relationship tracking infrastructure
+- [x] **Stage 2.1** - Relationship tracking infrastructure (Git: 6aa8467)
 - [ ] Stage 2.2 - Asset Card relationship enhancements
 - [ ] Stage 3.1 - Manual holder change control
 - [ ] Stage 4.1 - Sales asset line tables
@@ -538,14 +549,14 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 - [ ] Stage 7.1 - Role Center implementation
 
 ### Current Stage
-**Stage 2.1** - Relationship Entry Infrastructure (Next to implement)
+**Stage 2.2** - Asset Card Enhancements (Next to implement)
 
 ### Progress Summary
-- **Completed:** 5/17 stages (29%)
-- **Current Phase:** Stage 1 - Core Transfer Infrastructure (Complete!)
-- **Git Commits:** 5 (62c805b, e2f7016, 41f2340, 279974f, 2e0eabf)
-- **Objects Created:** 21 (2 enums, 6 tables, 8 pages, 3 codeunits, 2 table enhancements)
-- **Tests Created:** 16 test procedures (6 in 50107, 10 in 50108)
+- **Completed:** 6/17 stages (35%)
+- **Current Phase:** Stage 2 - Relationship Tracking (In Progress)
+- **Git Commits:** 6 (62c805b, e2f7016, 41f2340, 279974f, 2e0eabf, 6aa8467)
+- **Objects Created:** 25 (3 enums, 7 tables, 9 pages, 4 codeunits, 2 table enhancements)
+- **Tests Created:** 21 test procedures (6 in 50107, 10 in 50108, 5 in 50109)
 
 ---
 
@@ -558,7 +569,7 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 - 70182314: Asset Transfer Line ✅ CREATED
 - 70182315: Posted Asset Transfer ✅ CREATED
 - 70182316: Pstd. Asset Trans. Line ✅ CREATED
-- 70182317: Asset Relationship Entry
+- 70182317: Asset Relation Entry ✅ CREATED
 - 70182318: Sales Asset Line
 - 70182319: Posted Sales Asset Line
 - 70182320: Purch. Asset Line
@@ -576,7 +587,7 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 - 70182352: Asset Journal ✅ CREATED
 - 70182353-70182358: Transfer Order pages (6)
 - 70182359-70182364: Document integration subpages (6)
-- 70182365: Relationship Entries
+- 70182365: Relationship Entries ✅ CREATED
 - 70182366-70182369: Posted shipment/receipt subpages (4)
 - 70182370-70182372: Role Center pages (3)
 
@@ -584,10 +595,10 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 - 70182390: Asset Jnl.-Post ✅ CREATED
 - 70182391: Asset Transfer-Post
 - 70182392: Document Integration
-- 70182393: Relationship Mgt
+- 70182393: Relationship Mgt ✅ CREATED
 
 ### Enums (70182408-70182409)
-- 70182408: Relationship Entry Type
+- 70182408: Relationship Entry Type ✅ CREATED
 - 70182409: Transfer Status ✅ CREATED
 
 ### Enhanced Existing Objects
@@ -606,8 +617,8 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 
 ### Test Codeunits (50107-50113)
 - 50107: Journal Tests ✅ CREATED (6 test procedures)
-- 50108: Transfer Order Tests
-- 50109: Relationship Tests
+- 50108: Transfer Order Tests ✅ CREATED (10 test procedures)
+- 50109: Relationship Tests ✅ CREATED (5 test procedures)
 - 50110: Sales Integration Tests
 - 50111: Purchase Integration Tests
 - 50112: Transfer Integration Tests
