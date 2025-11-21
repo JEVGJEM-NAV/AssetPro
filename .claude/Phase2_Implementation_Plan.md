@@ -27,7 +27,7 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 | 1.5 | Asset Transfer Order - Posting | 1 codeunit, tests | ✅ **COMPLETE** | 2e0eabf |
 | 2.1 | Relationship Entry Infrastructure | 1 table, 1 enum, 1 page, 1 codeunit | ✅ **COMPLETE** | 6aa8467 |
 | 2.2 | Asset Card Enhancements | Page modifications, table trigger, tests | ✅ **COMPLETE** | 3f01ce6 |
-| 3.1 | Manual Holder Change Control | Table enhancements, tests | Pending | - |
+| 3.1 | Manual Holder Change Control | Table enhancements, tests | ✅ **COMPLETE** | b17de0f |
 | 4.1 | Sales Asset Line Tables | 4 tables | Pending | - |
 | 4.2 | Sales Asset Line Pages | 4 pages | Pending | - |
 | 4.3 | Sales Integration Logic | 3 extensions, 1 codeunit, tests | Pending | - |
@@ -37,7 +37,7 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 | 6.2 | Transfer Integration Logic | 2 extensions, tests | Pending | - |
 | 7.1 | Role Center Implementation | 1 table, 3 pages, 1 profile | Pending | - |
 
-**Progress: 7/17 stages complete (41%)**
+**Progress: 8/17 stages complete (47%)**
 
 ---
 
@@ -291,31 +291,46 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 
 ## Stage 3: Manual Holder Change Control
 
-### Stage 3.1: Setup and Asset Enhancements ⏸️ PENDING
+### Stage 3.1: Manual Holder Change Control ✅ COMPLETE
 
-**Objective:** Implement R7 and R8 - manual change control and auto-registration
+**Objective:** Implement R7 and R8 - manual change control and auto-registration via journal pattern
 
-**Objects to Enhance:**
-- Table 70182300 "JML AP Asset Setup" - Add "Block Manual Holder Change" field
-- Table 70182301 "JML AP Asset" - Add OnModify trigger for R8
-- Page 70182330 "JML AP Asset Setup" - Add field to page
-- Enhance tests in 50105 "JML AP Transfer Tests"
+**Architecture Decision:**
+Refactored from direct holder entry creation to journal-based pattern for unified validation:
+- Asset Card UI → OnModify trigger → RegisterManualHolderChange()
+- CreateAndPostManualChange() API routes to existing journal posting codeunit
+- Single code path for all holder entry creation
+- Consistent validation (posting date, holder validation, children propagation, subasset blocking)
 
-**Key Features:**
-- R7: Block Manual Holder Change checkbox in setup
-- R7: Validation on Asset Card holder fields
-- R8: OnModify trigger to auto-register manual changes
-- R8: Create Transfer Out/In entries automatically
-- R8: Document No. = "MANUAL-[timestamp]"
+**Objects Enhanced:**
+- ✅ Table 70182300 "JML AP Asset Setup" - Added field 33 "Block Manual Holder Change"
+- ✅ Page 70182330 "JML AP Asset Setup" - Added UI control for blocking flag
+- ✅ Table 70182301 "JML AP Asset" - Added RegisterManualHolderChange() procedure in OnModify trigger
+- ✅ Codeunit 70182390 "JML AP Asset Jnl.-Post" - Added CreateAndPostManualChange() internal API
+
+**Objects Created:**
+- ✅ Test Codeunit 50110 "JML AP Manual Holder Tests" (6 test procedures)
+
+**Key Features Implemented:**
+- ✅ R7: Block Manual Holder Change setup flag with validation
+- ✅ R8: Auto-register manual changes via journal with "MAN-" document prefix
+- ✅ R4: Automatic children propagation (inherited from journal pattern)
+- ✅ R6: Subasset protection (inherited from journal pattern)
+- ✅ Initial holder assignment also creates holder entries
+- ✅ Journal-based approach ensures all validation rules applied consistently
 
 **Testing:**
-- Unit: Block validation works correctly
-- Integration: Manual change creates holder entries (when allowed)
-- Integration: Manual change blocked (when setup enabled)
-- Integration: Children propagate with manual change
-- Build-Publish-Test: All tests pass
+- ✅ 6 test procedures created and passing:
+  1. TestManualHolderChange_CreatesJournalEntries - Happy path
+  2. TestManualHolderChange_BlockedBySetup_ThrowsError - R7 validation
+  3. TestManualHolderChange_TransfersChildren - R4 propagation
+  4. TestManualHolderChange_BlockedForSubasset - R6 subasset blocking
+  5. TestManualHolderChange_InitialHolderAssignment_CreatesEntries - Initial assignment
+- ✅ Build: 0 errors, 0 warnings
+- ✅ Published to container bc27w1
+- ✅ All tests passing (6/6)
 
-**Git Commit:** "Phase 2 Stage 3.1 - Manual holder change control (R7/R8)"
+**Git Commit:** `b17de0f` "Phase 2 Stage 3.1 - Manual holder change via journal pattern (R7/R8)"
 
 ---
 
@@ -555,8 +570,8 @@ This plan implements Phase 2 in 7 major stages, with each stage being a complete
 - [x] **Stage 1.4** - Asset Transfer Order pages (Git: 279974f)
 - [x] **Stage 1.5** - Asset Transfer Order posting logic (Git: 2e0eabf)
 - [x] **Stage 2.1** - Relationship tracking infrastructure (Git: 6aa8467)
-- [ ] Stage 2.2 - Asset Card relationship enhancements
-- [ ] Stage 3.1 - Manual holder change control
+- [x] **Stage 2.2** - Asset Card relationship enhancements (Git: 3f01ce6)
+- [x] **Stage 3.1** - Manual holder change control (Git: b17de0f)
 - [ ] Stage 4.1 - Sales asset line tables
 - [ ] Stage 4.2 - Sales asset line pages
 - [ ] Stage 4.3 - Sales integration logic
