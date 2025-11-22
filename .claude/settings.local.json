@@ -5,7 +5,9 @@
       "Bash(pwsh ./build.ps1)",
       "Bash(pwsh:*)",
       "Bash(Select-String -Pattern \"(Codeunit|Success|Failure|Error:|Tests completed)\" -Context 0,1)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git restore:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

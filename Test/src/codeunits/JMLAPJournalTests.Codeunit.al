@@ -4,7 +4,7 @@ codeunit 50107 "JML AP Journal Tests"
     TestPermissions = Disabled;
 
     var
-        Assert: Codeunit "Library - Assert";
+        Assert: Codeunit "Library Assert";
 
     [Test]
     procedure PostJournal_ValidData_CreatesHolderEntries()

@@ -4,8 +4,8 @@ codeunit 50108 "JML AP Transfer Order Tests"
     TestPermissions = Disabled;
 
     var
-        Assert: Codeunit "Library - Assert";
-        // LibraryRandom: Codeunit "Library - Random";  // Temporarily disabled - missing package
+        Assert: Codeunit "Library Assert";
+    // LibraryRandom: Codeunit "Library - Random";  // Temporarily disabled - missing package
 
     // ============================================
     // Happy Path Tests
@@ -15,7 +15,7 @@ codeunit 50108 "JML AP Transfer Order Tests"
     procedure PostTransferOrder_ValidOrder_CreatesPostedDocument()
     var
         Asset: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         PostedTransfer: Record "JML AP Posted Asset Transfer";
@@ -58,8 +58,8 @@ codeunit 50108 "JML AP Transfer Order Tests"
     [Test]
     procedure PostTransferOrder_MultipleAssets_AllTransferred()
     var
-        Asset1, Asset2, Asset3: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        Asset1, Asset2, Asset3 : Record "JML AP Asset";
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         PostedTransfer: Record "JML AP Posted Asset Transfer";
@@ -108,8 +108,8 @@ codeunit 50108 "JML AP Transfer Order Tests"
     [Test]
     procedure PostTransferOrder_WithChildren_ChildrenTransferred()
     var
-        ParentAsset, ChildAsset: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        ParentAsset, ChildAsset : Record "JML AP Asset";
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         PostedTransfer: Record "JML AP Posted Asset Transfer";
@@ -154,7 +154,7 @@ codeunit 50108 "JML AP Transfer Order Tests"
     procedure PostTransferOrder_NotReleased_ThrowsError()
     var
         Asset: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         AssetTransferPost: Codeunit "JML AP Asset Transfer-Post";
@@ -181,7 +181,7 @@ codeunit 50108 "JML AP Transfer Order Tests"
     [Test]
     procedure PostTransferOrder_NoLines_ThrowsError()
     var
-        Location1, Location2: Record Location;
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         AssetTransferPost: Codeunit "JML AP Asset Transfer-Post";
     begin
@@ -206,7 +206,7 @@ codeunit 50108 "JML AP Transfer Order Tests"
     procedure PostTransferOrder_AssetNotAtFromHolder_ThrowsError()
     var
         Asset: Record "JML AP Asset";
-        Location1, Location2, Location3: Record Location;
+        Location1, Location2, Location3 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         AssetTransferPost: Codeunit "JML AP Asset Transfer-Post";
@@ -239,7 +239,7 @@ codeunit 50108 "JML AP Transfer Order Tests"
     procedure PostTransferOrder_AssetBlocked_ThrowsError()
     var
         Asset: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         AssetTransferPost: Codeunit "JML AP Asset Transfer-Post";
@@ -271,8 +271,8 @@ codeunit 50108 "JML AP Transfer Order Tests"
     [Test]
     procedure PostTransferOrder_Subasset_ThrowsError()
     var
-        ParentAsset, ChildAsset: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        ParentAsset, ChildAsset : Record "JML AP Asset";
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         AssetTransferPost: Codeunit "JML AP Asset Transfer-Post";
@@ -311,7 +311,7 @@ codeunit 50108 "JML AP Transfer Order Tests"
     procedure PostTransferOrder_UsesJournalPattern_ValidatesPostingDate()
     var
         Asset: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         AssetTransferPost: Codeunit "JML AP Asset Transfer-Post";
@@ -345,8 +345,8 @@ codeunit 50108 "JML AP Transfer Order Tests"
     [Test]
     procedure PostTransferOrder_TransactionNoLinked_AllEntriesHaveSameNo()
     var
-        ParentAsset, ChildAsset: Record "JML AP Asset";
-        Location1, Location2: Record Location;
+        ParentAsset, ChildAsset : Record "JML AP Asset";
+        Location1, Location2 : Record Location;
         TransferHeader: Record "JML AP Asset Transfer Header";
         TransferLine: Record "JML AP Asset Transfer Line";
         PostedTransfer: Record "JML AP Posted Asset Transfer";

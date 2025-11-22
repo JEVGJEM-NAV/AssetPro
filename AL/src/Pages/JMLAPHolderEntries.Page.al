@@ -1,6 +1,6 @@
 page 70182339 "JML AP Holder Entries"
 {
-    Caption = 'Holder Entries';
+    Caption = 'Asset Holder Entries';
     PageType = List;
     SourceTable = "JML AP Holder Entry";
     UsageCategory = ReportsAndAnalysis;
